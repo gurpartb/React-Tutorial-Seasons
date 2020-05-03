@@ -1,17 +1,50 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import React from 'react'
+import ReactDOM from 'react-dom'
+import SeasonDisplay from './SeasonDisplay'
+import Spinner from './Spinner'
+
+class App extends React.Component{
+
+    // Babel.io for detailed translation
+    state = {lat: null, errorMessage: ''};
+
+    // 'Life Cycle Method' componentDidMount
+    // gets called once after the render function is called
+    componentDidMount(){
+        window.navigator.geolocation.getCurrentPosition(
+            position => {
+                // we called setstate!!!
+                this.setState({lat: position.coords.latitude})
+            },
+            err => {
+                // we called setstate!!!
+                this.setState({errorMessage: err.message})
+            }
+        )
+    }
+
+    renderContent(){
+        if(this.state.lat){
+            return <SeasonDisplay lat={this.state.lat} />
+        }
+
+        if(this.state.errorMessage){
+            return <SeasonDisplay errorMessage={this.state.errorMessage} />
+        }
+
+        return <Spinner />;
+    }
+
+    // React says we have to define render!!
+    render(){
+
+        return (
+            <div className='border red'>{this.renderContent()}</div>
+        )
+    }
+}
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+    <App />,
+    document.querySelector('#root')
+)
